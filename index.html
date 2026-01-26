@@ -16,11 +16,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- SEO Meta Tags -->
-    <title>TrueDraw 公平抽 | 加密級亂數線上抽獎程式 (尾牙/活動專用)</title>
+    <title>TrueDraw 公平抽 | 密碼學等級亂數線上抽獎程式 (尾牙/活動專用)</title>
     <meta name="description"
         content="TrueDraw 公平抽是一款基於 Web Crypto API 的加密級亂數抽獎程式。保障絕對公平，無後門、不重複中獎。支援名單匯入與 CSV 結果匯出，是公司尾牙、社群活動的最佳免費抽獎工具。">
     <meta name="keywords"
-        content="抽獎程式, 線上抽獎, 尾牙抽獎, 亂數產生器, TrueDraw, 公平抽, 加密級亂數, CSPRNG, Web Crypto API, 不重複抽獎, 免費抽獎工具">
+        content="抽獎程式, 線上抽獎, 尾牙抽獎, 亂數產生器, TrueDraw, 公平抽, 密碼學等級亂數, CSPRNG, Web Crypto API, 不重複抽獎, 免費抽獎工具">
     <meta name="author" content="TrueDraw Team">
 
     <!-- Open Graph / Social Sharing -->
@@ -121,44 +121,117 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px]">
 
             <!-- Left Column: Settings -->
+
             <div class="bg-white p-4 rounded-lg shadow flex flex-col h-full">
-                <h2 class="text-xl font-semibold mb-2 flex items-center">
-                    <span class="bg-blue-100 text-blue-600 py-1 px-2 rounded text-sm mr-2">1</span>
-                    獎項設定
-                </h2>
-                <p class="text-xs text-gray-500 mb-2">格式：獎項名稱, 數量 (每行一個)</p>
+
+                <div class="flex justify-between items-center mb-2">
+
+                    <h2 class="text-xl font-semibold flex items-center">
+
+                        <span class="bg-blue-100 text-blue-600 py-1 px-2 rounded text-sm mr-2">1</span>
+
+                        獎項設定
+
+                    </h2>
+
+                    <button id="editPrizesBtn" onclick="app.toggleEditMode('prizes')"
+                        class="text-xs text-blue-500 hover:text-blue-700 underline hidden">修改</button>
+
+                </div>
+
+
+
+                <!-- Input Mode -->
+
                 <textarea id="prizesInput"
                     class="w-full flex-grow p-3 border rounded focus:ring-2 focus:ring-blue-400 focus:outline-none resize-none font-mono text-sm"
                     placeholder="特獎, 1&#10;二獎, 3&#10;三獎, 5"></textarea>
+
+
+
+                <!-- List Mode (Visual) -->
+
+                <div id="prizesListView"
+                    class="w-full flex-grow border rounded overflow-y-auto hidden bg-gray-50 p-2 space-y-1">
+
+                    <!-- Dynamic Items -->
+
+                </div>
+
             </div>
 
+
+
             <!-- Center Column: Action -->
+
             <div class="bg-white p-4 rounded-lg shadow flex flex-col h-full relative">
-                <h2 class="text-xl font-semibold mb-2 flex items-center">
-                    <span class="bg-blue-100 text-blue-600 py-1 px-2 rounded text-sm mr-2">2</span>
-                    參與者名單
-                </h2>
-                <p class="text-xs text-gray-500 mb-2">每行一個名字</p>
+
+                <div class="flex justify-between items-center mb-2">
+
+                    <h2 class="text-xl font-semibold flex items-center">
+
+                        <span class="bg-blue-100 text-blue-600 py-1 px-2 rounded text-sm mr-2">2</span>
+
+                        參與者名單
+
+                    </h2>
+
+                    <button id="editNamesBtn" onclick="app.toggleEditMode('names')"
+                        class="text-xs text-blue-500 hover:text-blue-700 underline hidden">修改</button>
+
+                </div>
+
+
+
+                <!-- Input Mode -->
+
                 <textarea id="namesInput"
                     class="w-full h-1/2 p-3 border rounded focus:ring-2 focus:ring-blue-400 focus:outline-none resize-none font-mono text-sm mb-4"
                     placeholder="王小明&#10;李大華&#10;張三"></textarea>
 
-                <!-- Display Area -->
-                <div
-                    class="flex-grow flex flex-col items-center justify-center bg-gray-50 rounded border-2 border-dashed border-gray-300 p-4 relative overflow-hidden">
-                    <div id="currentDrawDisplay" class="text-4xl font-bold text-gray-700 text-center z-10 break-all">
-                        準備就緒
-                    </div>
-                    <div id="currentPrizeDisplay" class="text-lg text-blue-500 mt-2 font-medium z-10">
-                        <!-- 當前抽取的獎項 -->
-                    </div>
+
+
+                <!-- List Mode (Visual) -->
+
+                <div id="namesListView"
+                    class="w-full h-1/2 border rounded overflow-y-auto hidden bg-gray-50 p-2 space-y-1 mb-4 text-sm">
+
+                    <!-- Dynamic Items -->
+
                 </div>
 
+
+
+                <!-- Display Area -->
+
+                <div
+                    class="flex-grow flex flex-col items-center justify-center bg-gray-50 rounded border-2 border-dashed border-gray-300 p-4 relative overflow-hidden">
+
+                    <div id="currentDrawDisplay" class="text-4xl font-bold text-gray-700 text-center z-10 break-all">
+
+                        準備就緒
+
+                    </div>
+
+                    <div id="currentPrizeDisplay" class="text-lg text-blue-500 mt-2 font-medium z-10">
+
+                        <!-- 當前抽取的獎項 -->
+
+                    </div>
+
+                </div>
+
+
+
                 <!-- Action Button -->
+
                 <button id="drawBtn" onclick="app.startDraw()"
                     class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-bold py-4 rounded-lg shadow-lg transform active:scale-95 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed">
+
                     開始抽獎
+
                 </button>
+
             </div>
 
             <!-- Right Column: Results -->
@@ -240,8 +313,17 @@
     <script>
         class LotteryApp {
             constructor() {
+                // DOM Elements - Inputs
                 this.prizesInput = document.getElementById('prizesInput');
                 this.namesInput = document.getElementById('namesInput');
+
+                // DOM Elements - List Views & Controls
+                this.prizesListView = document.getElementById('prizesListView');
+                this.namesListView = document.getElementById('namesListView');
+                this.editPrizesBtn = document.getElementById('editPrizesBtn');
+                this.editNamesBtn = document.getElementById('editNamesBtn');
+
+                // DOM Elements - Status & Action
                 this.resultsList = document.getElementById('resultsList');
                 this.currentDrawDisplay = document.getElementById('currentDrawDisplay');
                 this.currentPrizeDisplay = document.getElementById('currentPrizeDisplay');
@@ -249,33 +331,62 @@
                 this.drawnCountEl = document.getElementById('drawnCount');
                 this.remainingCountEl = document.getElementById('remainingCount');
 
+                // DOM Elements - Modal
                 this.winnerModal = document.getElementById('winnerModal');
                 this.modalContent = document.getElementById('modalContent');
                 this.modalWinner = document.getElementById('modalWinner');
                 this.modalPrize = document.getElementById('modalPrize');
 
+                // State
                 this.isRolling = false;
+                this.isLocked = false;
                 this.results = []; // Array of { prize: string, winner: string, timestamp: number }
 
                 this.init();
             }
 
             init() {
-                // Load data from localStorage
                 this.loadData();
 
-                // Add event listeners for auto-save
+                // Auto-save listeners
                 this.prizesInput.addEventListener('input', () => this.saveData());
                 this.namesInput.addEventListener('input', () => this.saveData());
 
                 this.renderResults();
                 this.updateStatus();
+
+                // Restore locked state if draw in progress
+                if (this.results.length > 0) {
+                    this.setLockState(true);
+                }
+
+                this.addGlobalListeners();
             }
 
+            addGlobalListeners() {
+                window.addEventListener('keydown', (e) => {
+                    if (['TEXTAREA', 'INPUT'].includes(document.activeElement.tagName)) return;
+
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (!this.winnerModal.classList.contains('hidden')) {
+                            this.closeModal();
+                        } else if (!this.isRolling && !this.drawBtn.disabled) {
+                            this.startDraw();
+                        }
+                    }
+                });
+            }
+
+            // ==========================================
+            // 💾 Data Persistence
+            // ==========================================
+
             loadData() {
-                const savedPrizes = localStorage.getItem('lottery_prizes');
-                const savedNames = localStorage.getItem('lottery_names');
-                const savedResults = localStorage.getItem('lottery_results');
+                const get = (k) => localStorage.getItem(k);
+                const savedPrizes = get('lottery_prizes');
+                const savedNames = get('lottery_names');
+                const savedResults = get('lottery_results');
 
                 if (savedPrizes) this.prizesInput.value = savedPrizes;
                 if (savedNames) this.namesInput.value = savedNames;
@@ -289,34 +400,63 @@
                 this.updateStatus();
             }
 
-            // Parse prizes text into a flat array of prizes to be drawn
-            // Example: "Prize A, 2" becomes ["Prize A", "Prize A"]
+            resetData() {
+                if (confirm('確定要清除所有資料嗎？這將會清空獎項、名單與所有中獎紀錄。')) {
+                    this.prizesInput.value = '';
+                    this.namesInput.value = '';
+                    this.results = [];
+                    this.saveData();
+                    this.renderResults();
+                    this.currentDrawDisplay.textContent = '準備就緒';
+                    this.setLockState(false);
+                    this.updateStatus();
+                }
+            }
+
+            exportCSV() {
+                if (this.results.length === 0) return alert('目前沒有中獎資料可匯出。');
+
+                let csvContent = "\uFEFF獎項,得獎者,時間\n";
+                this.results.forEach(row => {
+                    const date = new Date(row.timestamp).toLocaleString();
+                    const prize = row.prize.replace(/"/g, '""');
+                    const winner = row.winner.replace(/"/g, '""');
+                    csvContent += `"${prize}","${winner}","${date}"\n`;
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "抽獎結果.csv";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            // ==========================================
+            // 🧠 Core Logic
+            // ==========================================
+
             getPrizePool() {
                 const lines = this.prizesInput.value.split('\n').filter(line => line.trim() !== '');
                 let pool = [];
                 let error = null;
 
                 lines.forEach((line, index) => {
-                    // Split by first comma
                     const parts = line.split(',');
                     if (parts.length < 2) {
-                        // Attempt to be lenient: if no comma, assume quantity 1
                         pool.push(line.trim());
                     } else {
                         const name = parts[0].trim();
-                        const qtyStr = parts.slice(1).join('').trim(); // join rest in case of extra commas
-                        const qty = parseInt(qtyStr, 10);
-
+                        const qty = parseInt(parts.slice(1).join('').trim(), 10);
                         if (isNaN(qty) || qty < 1) {
                             error = `第 ${index + 1} 行獎項數量格式錯誤: "${line}"`;
                         } else {
-                            for (let i = 0; i < qty; i++) {
-                                pool.push(name);
-                            }
+                            for (let i = 0; i < qty; i++) pool.push(name);
                         }
                     }
                 });
-
                 return { pool, error };
             }
 
@@ -324,48 +464,13 @@
                 return this.namesInput.value.split('\n').map(n => n.trim()).filter(n => n !== '');
             }
 
-            // Get list of participants who haven't won yet
+            // IMPORTANT: Method signature used by external scripts (Do not change)
             getEligibleParticipants() {
                 const allParticipants = this.getParticipants();
                 const winners = new Set(this.results.map(r => r.winner));
                 return allParticipants.filter(p => !winners.has(p));
             }
 
-            updateStatus() {
-                const { pool } = this.getPrizePool();
-                const eligible = this.getEligibleParticipants();
-
-                // Find next prize
-                const nextPrizeIndex = this.results.length;
-                const nextPrize = pool[nextPrizeIndex];
-
-                if (nextPrize) {
-                    this.currentPrizeDisplay.textContent = `即將抽取：${nextPrize}`;
-                    this.drawBtn.disabled = false;
-                    this.drawBtn.textContent = '開始抽獎';
-                    this.drawBtn.classList.remove('bg-gray-400');
-                    this.drawBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
-                } else {
-                    if (pool.length > 0 && this.results.length >= pool.length) {
-                        this.currentPrizeDisplay.textContent = '所有獎項已抽取完畢';
-                        this.drawBtn.textContent = '抽獎結束';
-                    } else if (pool.length === 0) {
-                        this.currentPrizeDisplay.textContent = '請先設定獎項';
-                    }
-                    this.drawBtn.disabled = true;
-                    this.drawBtn.classList.add('bg-gray-400');
-                    this.drawBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-                }
-
-                if (this.isRolling) {
-                    this.drawBtn.disabled = true;
-                }
-
-                this.drawnCountEl.textContent = this.results.length;
-                this.remainingCountEl.textContent = eligible.length;
-            }
-
-            // 優先使用 Web Crypto API，若不支援則自動降級使用 Math.random()
             getSecureRandomInt(max) {
                 try {
                     if (window.crypto && window.crypto.getRandomValues) {
@@ -374,52 +479,59 @@
                         return Math.floor((array[0] / (0xffffffff + 1)) * max);
                     }
                 } catch (e) {
-                    console.warn("Crypto API 執行失敗，切換至標準隨機模式", e);
+                    console.warn("Crypto API failed, fallback to Math.random", e);
                 }
-                // Fallback
                 return Math.floor(Math.random() * max);
             }
 
+            // IMPORTANT: Method signature used by external scripts (Do not change)
+            pickWinner(eligible, prizeName) {
+                return eligible[this.getSecureRandomInt(eligible.length)];
+            }
+
+            // ==========================================
+            // 🎬 Draw Flow & Animation
+            // ==========================================
+
             startDraw() {
-                const { pool, error } = this.getPrizePool();
-                if (error) {
-                    alert(error);
-                    return;
-                }
+                const validation = this.validateDrawCondition();
+                if (validation.error) return alert(validation.error);
 
-                const eligible = this.getEligibleParticipants();
-                const nextPrizeIndex = this.results.length;
-
-                if (nextPrizeIndex >= pool.length) {
-                    alert('所有獎項已經抽取完畢！');
-                    return;
-                }
-
-                if (eligible.length === 0) {
-                    alert('沒有剩餘的參與者可供抽獎！');
-                    return;
-                }
-
-                // Logic Check: Is it safe?
-                // Not enforcing Participants >= Total Prizes strictly upfront, 
-                // but checking before each draw if there are people left.
-
+                // Start Flow
+                this.setLockState(true);
                 this.isRolling = true;
                 this.drawBtn.disabled = true;
-                this.prizesInput.disabled = true;
-                this.namesInput.disabled = true;
 
-                const nextPrize = pool[nextPrizeIndex];
+                // Run Animation -> Finalize
+                this.runDrawAnimation(validation.eligible, validation.nextPrize);
+            }
 
-                // Animation Logic
-                let duration = 2000; // 2 seconds
+            validateDrawCondition() {
+                const { pool, error } = this.getPrizePool();
+                if (error) return { error };
+
+                const nextPrizeIndex = this.results.length;
+                if (nextPrizeIndex >= pool.length) return { error: '所有獎項已經抽取完畢！' };
+
+                const eligible = this.getEligibleParticipants();
+                if (eligible.length === 0) return { error: '沒有剩餘的參與者可供抽獎！' };
+
+                return {
+                    pool,
+                    eligible,
+                    nextPrize: pool[nextPrizeIndex]
+                };
+            }
+
+            runDrawAnimation(eligible, nextPrize) {
+                let duration = 2000;
                 let startTime = null;
 
                 const animate = (timestamp) => {
                     if (!startTime) startTime = timestamp;
                     const progress = timestamp - startTime;
 
-                    // Randomly show names
+                    // Random Name Effect
                     const randomName = eligible[this.getSecureRandomInt(eligible.length)];
                     this.currentDrawDisplay.textContent = randomName;
                     this.currentDrawDisplay.className = "text-5xl font-bold text-indigo-600 text-center z-10 break-all rolling-text";
@@ -430,134 +542,162 @@
                         this.finalizeDraw(eligible, nextPrize);
                     }
                 };
-
                 requestAnimationFrame(animate);
             }
 
-            // 核心抽獎邏輯：從名單中選出一位
-            pickWinner(eligible) {
-                const winnerIndex = this.getSecureRandomInt(eligible.length);
-                return eligible[winnerIndex];
-            }
-
             finalizeDraw(eligible, prizeName) {
-                // 選出得獎者 (預設使用 pickWinner，外部 config 可複寫此邏輯)
                 const winner = this.pickWinner(eligible, prizeName);
 
-                // Record Result
-                const result = {
+                this.results.push({
                     prize: prizeName,
                     winner: winner,
                     timestamp: new Date().toISOString()
-                };
+                });
 
-                this.results.push(result);
                 this.saveData();
 
-                // UI Updates
+                // UI Cleanup
                 this.isRolling = false;
-                this.prizesInput.disabled = false;
-                this.namesInput.disabled = false;
                 this.updateStatus();
                 this.renderResults();
-
-                // Show Modal
                 this.showModal(winner, prizeName);
+            }
+
+            // ==========================================
+            // 🎨 UI & Rendering
+            // ==========================================
+
+            updateStatus() {
+                const { pool } = this.getPrizePool();
+                const eligible = this.getEligibleParticipants();
+
+                this.renderListViews();
+
+                const nextPrizeIndex = this.results.length;
+                const nextPrize = pool[nextPrizeIndex];
+                const isFinished = pool.length > 0 && this.results.length >= pool.length;
+
+                // Update Text
+                if (nextPrize) {
+                    this.currentPrizeDisplay.textContent = `即將抽取：${nextPrize}`;
+                    this.setDrawButtonState(true, '開始抽獎');
+                } else {
+                    this.currentPrizeDisplay.textContent = isFinished ? '所有獎項已抽取完畢' : '請先設定獎項';
+                    this.setDrawButtonState(false, '抽獎結束');
+                }
+
+                if (this.isRolling) this.drawBtn.disabled = true;
+
+                this.drawnCountEl.textContent = this.results.length;
+                this.remainingCountEl.textContent = eligible.length;
+            }
+
+            setDrawButtonState(enabled, text) {
+                this.drawBtn.textContent = text;
+                this.drawBtn.disabled = !enabled;
+                if (enabled) {
+                    this.drawBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    this.drawBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                } else {
+                    this.drawBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    this.drawBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                }
+            }
+
+            setLockState(locked) {
+                this.isLocked = locked;
+                const toggle = (el, show) => el.classList.toggle('hidden', !show);
+
+                toggle(this.prizesInput, !locked);
+                toggle(this.namesInput, !locked);
+                toggle(this.prizesListView, locked);
+                toggle(this.namesListView, locked);
+                toggle(this.editPrizesBtn, locked);
+                toggle(this.editNamesBtn, locked);
+
+                this.renderListViews();
+            }
+
+            toggleEditMode(type) {
+                if (this.results.length > 0 && !confirm("修改設定可能導致抽獎順序或名單不一致，確定要切換回編輯模式嗎？")) return;
+                this.setLockState(false);
+            }
+
+            renderListViews() {
+                // Prizes List
+                const { pool } = this.getPrizePool();
+                const drawnCount = this.results.length;
+
+                this.prizesListView.innerHTML = pool.length ? '' : '<div class="text-gray-400 text-xs italic p-2">請先輸入獎項</div>';
+
+                pool.forEach((prize, index) => {
+                    const isDrawn = index < drawnCount;
+                    const el = document.createElement('div');
+                    el.className = `p-2 rounded text-sm flex items-center ${isDrawn ? 'bg-red-50 text-red-500' : 'bg-white text-gray-700'} border-b last:border-0`;
+                    el.innerHTML = `
+                        <span class="w-6 text-xs text-gray-400 mr-2">${index + 1}.</span>
+                        <span class="${isDrawn ? 'line-through' : ''} font-medium">${prize}</span>
+                        ${isDrawn ? '<span class="ml-auto text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">已抽出</span>' : ''}
+                    `;
+                    this.prizesListView.appendChild(el);
+                });
+
+                // Names List
+                const participants = this.getParticipants();
+                const winnersSet = new Set(this.results.map(r => r.winner));
+
+                this.namesListView.innerHTML = participants.length ? '' : '<div class="text-gray-400 text-xs italic p-2">請先輸入名單</div>';
+
+                participants.forEach((name) => {
+                    const isWinner = winnersSet.has(name);
+                    const el = document.createElement('div');
+                    el.className = `px-2 py-1.5 rounded text-sm flex items-center ${isWinner ? 'bg-red-50 text-red-500' : 'hover:bg-gray-100 text-gray-700'}`;
+                    el.innerHTML = `
+                        <span class="${isWinner ? 'line-through font-bold' : ''}">${name}</span>
+                        ${isWinner ? '<span class="ml-auto text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">中獎</span>' : ''}
+                    `;
+                    this.namesListView.appendChild(el);
+                });
+            }
+
+            renderResults() {
+                this.resultsList.innerHTML = this.results.length ? '' : '<div class="text-center text-gray-400 mt-10">尚無中獎紀錄</div>';
+
+                [...this.results].reverse().forEach((result) => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-gray-50 p-3 rounded border-l-4 border-indigo-500 mb-2 flex justify-between items-center animate-slide-in';
+                    div.innerHTML = `
+                        <div><span class="font-bold text-gray-800">${result.winner}</span></div>
+                        <div class="text-sm font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded">${result.prize}</div>
+                    `;
+                    this.resultsList.appendChild(div);
+                });
             }
 
             showModal(winner, prize) {
                 this.modalWinner.textContent = winner;
                 this.modalPrize.textContent = prize;
-
                 this.winnerModal.classList.remove('hidden');
-                // Small delay to allow display:block to apply before opacity transition
                 setTimeout(() => {
                     this.winnerModal.classList.remove('opacity-0');
-                    this.modalContent.classList.remove('scale-90');
+                    this.modalContent.classList.remove('scale-90', 'scale-100');
                     this.modalContent.classList.add('scale-100');
                 }, 10);
-
-                // Fireworks effect logic could go here
             }
 
             closeModal() {
                 this.winnerModal.classList.add('opacity-0');
                 this.modalContent.classList.remove('scale-100');
                 this.modalContent.classList.add('scale-90');
-
                 setTimeout(() => {
                     this.winnerModal.classList.add('hidden');
-                    // Reset text to "Ready" or keep last winner?
-                    // Let's keep last winner on display but styling back to normal
                     this.currentDrawDisplay.className = "text-4xl font-bold text-gray-700 text-center z-10 break-all";
                 }, 300);
-            }
-
-            renderResults() {
-                this.resultsList.innerHTML = '';
-
-                if (this.results.length === 0) {
-                    this.resultsList.innerHTML = '<div class="text-center text-gray-400 mt-10">尚無中獎紀錄</div>';
-                    return;
-                }
-
-                // Show latest first
-                [...this.results].reverse().forEach((result, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'bg-gray-50 p-3 rounded border-l-4 border-indigo-500 mb-2 flex justify-between items-center animate-slide-in';
-                    div.innerHTML = `
-                        <div>
-                            <span class="font-bold text-gray-800">${result.winner}</span>
-                        </div>
-                        <div class="text-sm font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
-                            ${result.prize}
-                        </div>
-                    `;
-                    this.resultsList.appendChild(div);
-                });
-            }
-
-            resetData() {
-                if (confirm('確定要清除所有資料嗎？這將會清空獎項、名單與所有中獎紀錄。')) {
-                    this.prizesInput.value = '';
-                    this.namesInput.value = '';
-                    this.results = [];
-                    this.saveData();
-                    this.renderResults();
-                    this.currentDrawDisplay.textContent = '準備就緒';
-                    this.updateStatus();
-                }
-            }
-
-            exportCSV() {
-                if (this.results.length === 0) {
-                    alert('目前沒有中獎資料可匯出。');
-                    return;
-                }
-
-                // Add BOM for Excel utf-8 compatibility
-                let csvContent = "\uFEFF獎項,得獎者,時間\n";
-
-                this.results.forEach(row => {
-                    const date = new Date(row.timestamp).toLocaleString();
-                    // Escape quotes if necessary
-                    const prize = row.prize.replace(/"/g, '""');
-                    const winner = row.winner.replace(/"/g, '""');
-                    csvContent += `"${prize}","${winner}","${date}"\n`;
-                });
-
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.setAttribute("href", url);
-                link.setAttribute("download", "抽獎結果.csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
             }
         }
 
         // Initialize App
+        window.LotteryApp = LotteryApp;
         const app = new LotteryApp();
     </script>
     <script src="jquery-3.7.1.min.js"></script>
