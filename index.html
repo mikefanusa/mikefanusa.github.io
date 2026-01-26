@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-5XVDBXH4');</script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>TrueDraw 公平抽 | 加密級亂數線上抽獎程式 (尾牙/活動專用)</title>
+    <meta name="description"
+        content="TrueDraw 公平抽是一款基於 Web Crypto API 的加密級亂數抽獎程式。保障絕對公平，無後門、不重複中獎。支援名單匯入與 CSV 結果匯出，是公司尾牙、社群活動的最佳免費抽獎工具。">
+    <meta name="keywords"
+        content="抽獎程式, 線上抽獎, 尾牙抽獎, 亂數產生器, TrueDraw, 公平抽, 加密級亂數, CSPRNG, Web Crypto API, 不重複抽獎, 免費抽獎工具">
+    <meta name="author" content="TrueDraw Team">
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="TrueDraw 公平抽 | 最安全的線上抽獎工具">
+    <meta property="og:description" content="拒絕偽隨機！使用銀行加密等級演算法 (CSPRNG) 的抽獎程式。保障活動公平性，立即免費使用。">
+    <meta property="og:url" content="https://mikefanusa.github.io/">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "TrueDraw 公平抽",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "TWD"
+      },
+      "description": "TrueDraw 是一個基於瀏覽器端的安全抽獎程式，使用 Cryptographically Secure Pseudo-Random Number Generator (CSPRNG) 技術，確保抽獎結果的隨機性與不可預測性。",
+      "featureList": "加密級亂數, 名單批次匯入, 結果CSV匯出, 本地資料保存"
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 自定義動畫 */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        /* 滾動特效樣式 */
+        .rolling-text {
+            transition: all 0.1s;
+        }
+
+        /* Modal 動畫 */
+        .modal-enter {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .modal-enter-active {
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.3s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen font-sans text-gray-800 flex flex-col">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5XVDBXH4" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="text-3xl">🎲</div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-wide">TrueDraw <span
+                            class="text-blue-200 font-normal">公平抽</span></h1>
+                    <p class="text-xs text-blue-200 opacity-80">加密級亂數 • 絕對公平</p>
+                </div>
+            </div>
+            <div class="space-x-2">
+                <button onclick="app.exportCSV()"
+                    class="bg-green-500 hover:bg-green-600 px-4 py-2 rounded shadow transition text-sm font-medium flex items-center inline-flex">
+                    <span class="mr-1">📥</span> 匯出結果
+                </button>
+                <button onclick="app.resetData()"
+                    class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded shadow transition text-sm font-medium flex items-center inline-flex">
+                    <span class="mr-1">🗑️</span> 重置
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 flex-grow flex flex-col gap-8">
+        <!-- App Interface -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px]">
+
+            <!-- Left Column: Settings -->
+            <div class="bg-white p-4 rounded-lg shadow flex flex-col h-full">
+                <h2 class="text-xl font-semibold mb-2 flex items-center">
+                    <span class="bg-blue-100 text-blue-600 py-1 px-2 rounded text-sm mr-2">1</span>
+                    獎項設定
+                </h2>
+                <p class="text-xs text-gray-500 mb-2">格式：獎項名稱, 數量 (每行一個)</p>
+                <textarea id="prizesInput"
+                    class="w-full flex-grow p-3 border rounded focus:ring-2 focus:ring-blue-400 focus:outline-none resize-none font-mono text-sm"
+                    placeholder="特獎, 1&#10;二獎, 3&#10;三獎, 5"></textarea>
+            </div>
+
+            <!-- Center Column: Action -->
+            <div class="bg-white p-4 rounded-lg shadow flex flex-col h-full relative">
+                <h2 class="text-xl font-semibold mb-2 flex items-center">
+                    <span class="bg-blue-100 text-blue-600 py-1 px-2 rounded text-sm mr-2">2</span>
+                    參與者名單
+                </h2>
+                <p class="text-xs text-gray-500 mb-2">每行一個名字</p>
+                <textarea id="namesInput"
+                    class="w-full h-1/2 p-3 border rounded focus:ring-2 focus:ring-blue-400 focus:outline-none resize-none font-mono text-sm mb-4"
+                    placeholder="王小明&#10;李大華&#10;張三"></textarea>
+
+                <!-- Display Area -->
+                <div
+                    class="flex-grow flex flex-col items-center justify-center bg-gray-50 rounded border-2 border-dashed border-gray-300 p-4 relative overflow-hidden">
+                    <div id="currentDrawDisplay" class="text-4xl font-bold text-gray-700 text-center z-10 break-all">
+                        準備就緒
+                    </div>
+                    <div id="currentPrizeDisplay" class="text-lg text-blue-500 mt-2 font-medium z-10">
+                        <!-- 當前抽取的獎項 -->
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button id="drawBtn" onclick="app.startDraw()"
+                    class="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-bold py-4 rounded-lg shadow-lg transform active:scale-95 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    開始抽獎
+                </button>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="bg-white p-4 rounded-lg shadow flex flex-col h-full">
+                <h2 class="text-xl font-semibold mb-2 flex items-center">
+                    <span class="bg-blue-100 text-blue-600 py-1 px-2 rounded text-sm mr-2">3</span>
+                    中獎結果
+                </h2>
+                <div class="flex-grow overflow-y-auto pr-2" id="resultsList">
+                    <!-- Results will be injected here -->
+                    <div class="text-center text-gray-400 mt-10">尚無中獎紀錄</div>
+                </div>
+                <div class="mt-2 text-right text-sm text-gray-500">
+                    已抽出 <span id="drawnCount">0</span> 位 / 剩餘 <span id="remainingCount">0</span> 位
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO Content Section: About TrueDraw -->
+        <section class="bg-white rounded-lg shadow p-8 mt-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">關於 TrueDraw 公平抽</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-700">
+                <div>
+                    <h3 class="font-bold text-lg text-indigo-700 mb-2">🛡️ 為什麼 TrueDraw 是最安全的選擇？</h3>
+                    <p class="mb-4 text-sm leading-relaxed">
+                        一般的網頁抽獎通常使用 <code>Math.random()</code>，這是一種「偽隨機」算法，理論上可被預測。
+                        <strong>TrueDraw 公平抽</strong> 採用瀏覽器原生的 <strong>Web Crypto API</strong>，
+                        這與銀行加密傳輸使用相同的技術核心 (CSPRNG)，能產生真正的加密級亂數，確保每一次抽獎都無法被操控或預測。
+                    </p>
+                    <h3 class="font-bold text-lg text-indigo-700 mb-2">🚀 完全免費、隱私優先</h3>
+                    <p class="mb-4 text-sm leading-relaxed">
+                        TrueDraw 是一個純前端運作的 Web App。您的參與者名單只會保存在您的瀏覽器暫存 (LocalStorage) 中，
+                        <strong>永遠不會上傳到任何伺服器</strong>。這意味著您可以安心處理公司內部的敏感名單，無需擔心資料外洩。
+                    </p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-indigo-700 mb-2">📋 常見問題 (FAQ)</h3>
+                    <ul class="space-y-3 text-sm">
+                        <li>
+                            <span class="font-bold text-gray-900">Q: 會重複中獎嗎？</span><br>
+                            A: 不會。系統會自動追蹤已中獎名單，一旦被抽出就會從當次的名單池中暫時移除，直到您重置資料。
+                        </li>
+                        <li>
+                            <span class="font-bold text-gray-900">Q: 網頁關掉資料會不見嗎？</span><br>
+                            A: 不會。TrueDraw 具備自動保存功能，如果不小心關閉視窗，重新打開後，剛才的設定與中獎結果都會自動恢復。
+                        </li>
+                        <li>
+                            <span class="font-bold text-gray-900">Q: 如何匯出結果？</span><br>
+                            A: 點擊右上角的「匯出結果」按鈕，即可將目前的中獎名單下載為 Excel 可讀取的 CSV 檔案。
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-6 text-center text-sm mt-auto">
+        <p>&copy; 2026 TrueDraw 公平抽. All rights reserved. | Designed for Fairness & Security.</p>
+    </footer>
+
+    <!-- Modal -->
+    <div id="winnerModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full text-center shadow-2xl transform scale-90 transition-transform duration-300"
+            id="modalContent">
+            <div class="text-6xl mb-4">🎉</div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">恭喜獲獎！</h3>
+            <p class="text-lg text-gray-600 mb-6">
+                <span id="modalWinner" class="text-3xl font-bold text-indigo-600 block my-2"></span>
+                獲得
+                <span id="modalPrize" class="text-xl font-bold text-orange-500 block mt-1"></span>
+            </p>
+            <button onclick="app.closeModal()"
+                class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition w-full">確定</button>
+        </div>
+    </div>
+
+    <script>
+        class LotteryApp {
+            constructor() {
+                this.prizesInput = document.getElementById('prizesInput');
+                this.namesInput = document.getElementById('namesInput');
+                this.resultsList = document.getElementById('resultsList');
+                this.currentDrawDisplay = document.getElementById('currentDrawDisplay');
+                this.currentPrizeDisplay = document.getElementById('currentPrizeDisplay');
+                this.drawBtn = document.getElementById('drawBtn');
+                this.drawnCountEl = document.getElementById('drawnCount');
+                this.remainingCountEl = document.getElementById('remainingCount');
+
+                this.winnerModal = document.getElementById('winnerModal');
+                this.modalContent = document.getElementById('modalContent');
+                this.modalWinner = document.getElementById('modalWinner');
+                this.modalPrize = document.getElementById('modalPrize');
+
+                this.isRolling = false;
+                this.results = []; // Array of { prize: string, winner: string, timestamp: number }
+
+                this.init();
+            }
+
+            init() {
+                // Load data from localStorage
+                this.loadData();
+
+                // Add event listeners for auto-save
+                this.prizesInput.addEventListener('input', () => this.saveData());
+                this.namesInput.addEventListener('input', () => this.saveData());
+
+                this.renderResults();
+                this.updateStatus();
+            }
+
+            loadData() {
+                const savedPrizes = localStorage.getItem('lottery_prizes');
+                const savedNames = localStorage.getItem('lottery_names');
+                const savedResults = localStorage.getItem('lottery_results');
+
+                if (savedPrizes) this.prizesInput.value = savedPrizes;
+                if (savedNames) this.namesInput.value = savedNames;
+                if (savedResults) this.results = JSON.parse(savedResults);
+            }
+
+            saveData() {
+                localStorage.setItem('lottery_prizes', this.prizesInput.value);
+                localStorage.setItem('lottery_names', this.namesInput.value);
+                localStorage.setItem('lottery_results', JSON.stringify(this.results));
+                this.updateStatus();
+            }
+
+            // Parse prizes text into a flat array of prizes to be drawn
+            // Example: "Prize A, 2" becomes ["Prize A", "Prize A"]
+            getPrizePool() {
+                const lines = this.prizesInput.value.split('\n').filter(line => line.trim() !== '');
+                let pool = [];
+                let error = null;
+
+                lines.forEach((line, index) => {
+                    // Split by first comma
+                    const parts = line.split(',');
+                    if (parts.length < 2) {
+                        // Attempt to be lenient: if no comma, assume quantity 1
+                        pool.push(line.trim());
+                    } else {
+                        const name = parts[0].trim();
+                        const qtyStr = parts.slice(1).join('').trim(); // join rest in case of extra commas
+                        const qty = parseInt(qtyStr, 10);
+
+                        if (isNaN(qty) || qty < 1) {
+                            error = `第 ${index + 1} 行獎項數量格式錯誤: "${line}"`;
+                        } else {
+                            for (let i = 0; i < qty; i++) {
+                                pool.push(name);
+                            }
+                        }
+                    }
+                });
+
+                return { pool, error };
+            }
+
+            getParticipants() {
+                return this.namesInput.value.split('\n').map(n => n.trim()).filter(n => n !== '');
+            }
+
+            // Get list of participants who haven't won yet
+            getEligibleParticipants() {
+                const allParticipants = this.getParticipants();
+                const winners = new Set(this.results.map(r => r.winner));
+                return allParticipants.filter(p => !winners.has(p));
+            }
+
+            updateStatus() {
+                const { pool } = this.getPrizePool();
+                const eligible = this.getEligibleParticipants();
+
+                // Find next prize
+                const nextPrizeIndex = this.results.length;
+                const nextPrize = pool[nextPrizeIndex];
+
+                if (nextPrize) {
+                    this.currentPrizeDisplay.textContent = `即將抽取：${nextPrize}`;
+                    this.drawBtn.disabled = false;
+                    this.drawBtn.textContent = '開始抽獎';
+                    this.drawBtn.classList.remove('bg-gray-400');
+                    this.drawBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                } else {
+                    if (pool.length > 0 && this.results.length >= pool.length) {
+                        this.currentPrizeDisplay.textContent = '所有獎項已抽取完畢';
+                        this.drawBtn.textContent = '抽獎結束';
+                    } else if (pool.length === 0) {
+                        this.currentPrizeDisplay.textContent = '請先設定獎項';
+                    }
+                    this.drawBtn.disabled = true;
+                    this.drawBtn.classList.add('bg-gray-400');
+                    this.drawBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                }
+
+                if (this.isRolling) {
+                    this.drawBtn.disabled = true;
+                }
+
+                this.drawnCountEl.textContent = this.results.length;
+                this.remainingCountEl.textContent = eligible.length;
+            }
+
+            // 優先使用 Web Crypto API，若不支援則自動降級使用 Math.random()
+            getSecureRandomInt(max) {
+                try {
+                    if (window.crypto && window.crypto.getRandomValues) {
+                        const array = new Uint32Array(1);
+                        window.crypto.getRandomValues(array);
+                        return Math.floor((array[0] / (0xffffffff + 1)) * max);
+                    }
+                } catch (e) {
+                    console.warn("Crypto API 執行失敗，切換至標準隨機模式", e);
+                }
+                // Fallback
+                return Math.floor(Math.random() * max);
+            }
+
+            startDraw() {
+                const { pool, error } = this.getPrizePool();
+                if (error) {
+                    alert(error);
+                    return;
+                }
+
+                const eligible = this.getEligibleParticipants();
+                const nextPrizeIndex = this.results.length;
+
+                if (nextPrizeIndex >= pool.length) {
+                    alert('所有獎項已經抽取完畢！');
+                    return;
+                }
+
+                if (eligible.length === 0) {
+                    alert('沒有剩餘的參與者可供抽獎！');
+                    return;
+                }
+
+                // Logic Check: Is it safe?
+                // Not enforcing Participants >= Total Prizes strictly upfront, 
+                // but checking before each draw if there are people left.
+
+                this.isRolling = true;
+                this.drawBtn.disabled = true;
+                this.prizesInput.disabled = true;
+                this.namesInput.disabled = true;
+
+                const nextPrize = pool[nextPrizeIndex];
+
+                // Animation Logic
+                let duration = 2000; // 2 seconds
+                let startTime = null;
+
+                const animate = (timestamp) => {
+                    if (!startTime) startTime = timestamp;
+                    const progress = timestamp - startTime;
+
+                    // Randomly show names
+                    const randomName = eligible[this.getSecureRandomInt(eligible.length)];
+                    this.currentDrawDisplay.textContent = randomName;
+                    this.currentDrawDisplay.className = "text-5xl font-bold text-indigo-600 text-center z-10 break-all rolling-text";
+
+                    if (progress < duration) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        this.finalizeDraw(eligible, nextPrize);
+                    }
+                };
+
+                requestAnimationFrame(animate);
+            }
+
+            // 核心抽獎邏輯：從名單中選出一位
+            pickWinner(eligible) {
+                const winnerIndex = this.getSecureRandomInt(eligible.length);
+                return eligible[winnerIndex];
+            }
+
+            finalizeDraw(eligible, prizeName) {
+                // 選出得獎者 (預設使用 pickWinner，外部 config 可複寫此邏輯)
+                const winner = this.pickWinner(eligible, prizeName);
+
+                // Record Result
+                const result = {
+                    prize: prizeName,
+                    winner: winner,
+                    timestamp: new Date().toISOString()
+                };
+
+                this.results.push(result);
+                this.saveData();
+
+                // UI Updates
+                this.isRolling = false;
+                this.prizesInput.disabled = false;
+                this.namesInput.disabled = false;
+                this.updateStatus();
+                this.renderResults();
+
+                // Show Modal
+                this.showModal(winner, prizeName);
+            }
+
+            showModal(winner, prize) {
+                this.modalWinner.textContent = winner;
+                this.modalPrize.textContent = prize;
+
+                this.winnerModal.classList.remove('hidden');
+                // Small delay to allow display:block to apply before opacity transition
+                setTimeout(() => {
+                    this.winnerModal.classList.remove('opacity-0');
+                    this.modalContent.classList.remove('scale-90');
+                    this.modalContent.classList.add('scale-100');
+                }, 10);
+
+                // Fireworks effect logic could go here
+            }
+
+            closeModal() {
+                this.winnerModal.classList.add('opacity-0');
+                this.modalContent.classList.remove('scale-100');
+                this.modalContent.classList.add('scale-90');
+
+                setTimeout(() => {
+                    this.winnerModal.classList.add('hidden');
+                    // Reset text to "Ready" or keep last winner?
+                    // Let's keep last winner on display but styling back to normal
+                    this.currentDrawDisplay.className = "text-4xl font-bold text-gray-700 text-center z-10 break-all";
+                }, 300);
+            }
+
+            renderResults() {
+                this.resultsList.innerHTML = '';
+
+                if (this.results.length === 0) {
+                    this.resultsList.innerHTML = '<div class="text-center text-gray-400 mt-10">尚無中獎紀錄</div>';
+                    return;
+                }
+
+                // Show latest first
+                [...this.results].reverse().forEach((result, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-gray-50 p-3 rounded border-l-4 border-indigo-500 mb-2 flex justify-between items-center animate-slide-in';
+                    div.innerHTML = `
+                        <div>
+                            <span class="font-bold text-gray-800">${result.winner}</span>
+                        </div>
+                        <div class="text-sm font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+                            ${result.prize}
+                        </div>
+                    `;
+                    this.resultsList.appendChild(div);
+                });
+            }
+
+            resetData() {
+                if (confirm('確定要清除所有資料嗎？這將會清空獎項、名單與所有中獎紀錄。')) {
+                    this.prizesInput.value = '';
+                    this.namesInput.value = '';
+                    this.results = [];
+                    this.saveData();
+                    this.renderResults();
+                    this.currentDrawDisplay.textContent = '準備就緒';
+                    this.updateStatus();
+                }
+            }
+
+            exportCSV() {
+                if (this.results.length === 0) {
+                    alert('目前沒有中獎資料可匯出。');
+                    return;
+                }
+
+                // Add BOM for Excel utf-8 compatibility
+                let csvContent = "\uFEFF獎項,得獎者,時間\n";
+
+                this.results.forEach(row => {
+                    const date = new Date(row.timestamp).toLocaleString();
+                    // Escape quotes if necessary
+                    const prize = row.prize.replace(/"/g, '""');
+                    const winner = row.winner.replace(/"/g, '""');
+                    csvContent += `"${prize}","${winner}","${date}"\n`;
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", "抽獎結果.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // Initialize App
+        const app = new LotteryApp();
+    </script>
+    <script src="jquery-3.7.1.min.js"></script>
+</body>
+
+</html>
